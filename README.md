@@ -65,8 +65,13 @@ Use the provided PowerShell script to build and push the image to Docker Hub (`y
 .\docker-push.ps1
 ```
 
-**3. Deploying on Another Machine**
-For a production-like environment without building from source, transfer only `docker-compose.hub.yml` and `nginx/nginx.conf` to the target machine and run:
+**3. Deploying on Another Machine (Automated)**
+For a seamless production deployment (e.g., on a fresh Rocky Linux VM), you can clone the repository and run the automated deployment script. The script will automatically install Docker and start the containers.
+
 ```bash
-docker compose -f docker-compose.hub.yml up -d
+git clone https://github.com/hugingstar/EnglishYoutube.git
+cd EnglishYoutube
+./build.sh
 ```
+
+During execution, select `1` to pull the image from Docker Hub (recommended) or `2` to build it locally.
