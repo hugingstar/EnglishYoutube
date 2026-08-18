@@ -22,6 +22,18 @@ else
     echo "✅ Docker가 이미 설치되어 있습니다."
 fi
 
+# 2. 방화벽 설정 (포트 80 개방)
+echo ""
+echo "🛡️ 방화벽 설정을 확인합니다..."
+if systemctl is-active --quiet firewalld; then
+    echo "방화벽(firewalld)이 동작 중입니다. 80번 포트를 자동으로 개방합니다."
+    sudo firewall-cmd --zone=public --add-port=80/tcp --permanent
+    sudo firewall-cmd --reload
+    echo "✅ 80번 포트 개방 완료."
+else
+    echo "방화벽(firewalld)이 비활성화되어 있거나 설치되지 않았습니다. 포트 개방을 건너뜁니다."
+fi
+
 echo ""
 echo "어떤 방식으로 배포하시겠습니까?"
 echo "1) Docker Hub에서 다운로드 받아 실행 (빠름, 권장)"
