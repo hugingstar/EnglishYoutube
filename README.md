@@ -56,12 +56,12 @@ cd EnglishYoutube
 
 ## 💻 로컬(PC) 개발자 가이드
 
-### 로컬 테스트 환경 띄우기 (도커)
-본인 PC에서 도커 환경을 그대로 띄워서 테스트하려면 아래 명령어를 사용하세요.
-```bash
-docker compose up -d --build
+### 로컬 테스트 환경 띄우기 (Windows Host PC)
+Windows 환경에서는 아래 PowerShell 스크립트를 실행하면 Docker 설치 여부 확인부터 배포까지 자동으로 진행됩니다.
+```powershell
+.\build.ps1
 ```
-완료 후 브라우저에서 `http://localhost` (포트 80) 로 접속합니다.
+> 스크립트 실행 후 `1`(Docker Hub) 또는 `2`(직접 빌드)를 선택하면 컨테이너가 실행됩니다. 완료 후 브라우저에서 `http://localhost` (포트 80) 로 접속하세요.
 
 ### Docker Hub 이미지 업데이트 (배포용)
 수정한 코드를 새로운 버전의 도커 이미지로 만들어 Docker Hub(`yslee4050/talkchamsae:latest`)에 업로드하려면 터미널(PowerShell)에서 아래 스크립트를 실행합니다.
