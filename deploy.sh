@@ -1,8 +1,9 @@
 #!/bin/bash
-# build.sh - 자동 배포 스크립트 (Rocky Linux / CentOS / RHEL 호환)
+# deploy.sh - 자동 배포 스크립트 (Linux/Mac/Rocky VM 호환)
+# 목적: Docker Hub에서 미리 빌드된 이미지를 다운로드하여 실행 (빠름)
 
 echo "==========================================="
-echo "🚀 EnglishYoutube 자동 배포 스크립트 시작"
+echo "🚀 EnglishYoutube 배포 시작 (Docker Hub 이미지 사용)"
 echo "==========================================="
 
 # 1. Docker 설치 여부 확인 및 설치 (Rocky Linux 기준)
@@ -35,9 +36,9 @@ else
 fi
 
 echo ""
-echo "🔨 소스코드를 직접 빌드하여 서버를 시작합니다..."
-sudo docker compose up -d --build
+echo "🌐 Docker Hub에서 이미지를 가져와 배포합니다..."
+sudo docker compose -f docker-compose.hub.yml up -d
 
 echo ""
-echo "🎉 모든 빌드 및 실행 작업이 완료되었습니다!"
+echo "🎉 모든 작업이 완료되었습니다!"
 echo "👉 브라우저에서 서버의 IP(포트 80)로 접속해 보세요."

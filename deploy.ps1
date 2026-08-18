@@ -1,10 +1,11 @@
 <#
 .SYNOPSIS
 Windows 환경(Host PC)을 위한 자동 배포 스크립트입니다.
+목적: Docker Hub에서 미리 빌드된 이미지를 다운로드하여 실행 (빠름)
 #>
 
 Write-Host "===========================================" -ForegroundColor Cyan
-Write-Host "🚀 EnglishYoutube Windows 자동 배포 스크립트 시작" -ForegroundColor Cyan
+Write-Host "🚀 EnglishYoutube 배포 시작 (Docker Hub 이미지 사용)" -ForegroundColor Cyan
 Write-Host "===========================================" -ForegroundColor Cyan
 
 # 1. Docker 설치 여부 확인
@@ -34,8 +35,8 @@ try {
 }
 
 Write-Host ""
-Write-Host "🔨 소스코드를 직접 빌드하여 로컬 환경에 배포합니다..." -ForegroundColor Cyan
-docker compose up -d --build
+Write-Host "🌐 Docker Hub에서 이미지를 가져와 배포합니다..." -ForegroundColor Cyan
+docker compose -f docker-compose.hub.yml up -d
 
 Write-Host ""
 Write-Host "🎉 모든 작업이 완료되었습니다!" -ForegroundColor Green

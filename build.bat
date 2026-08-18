@@ -28,31 +28,9 @@ if %ERRORLEVEL% neq 0 (
     exit /b
 )
 
-echo 어떤 방식으로 배포하시겠습니까?
-echo 1) Docker Hub에서 다운로드 받아 실행 (빠름, 권장)
-echo 2) 이 PC에서 직접 소스 코드를 빌드하여 실행 (오래 걸림)
-set /p choice="선택 (1 또는 2): "
-
-if "%choice%"=="1" (
-    echo.
-    echo 🌐 Docker Hub에서 이미지를 가져와 배포합니다...
-    docker compose -f docker-compose.hub.yml up -d
-    goto end
-)
-
-if "%choice%"=="2" (
-    echo.
-    echo 🔨 소스코드를 직접 빌드하여 배포합니다...
-    docker compose up -d --build
-    goto end
-)
-
 echo.
-echo [오류] 잘못된 입력입니다. 스크립트를 종료합니다.
-pause
-exit /b
-
-:end
+echo 🔨 소스코드를 직접 빌드하여 서버를 띄웁니다...
+docker compose up -d --build
 echo.
 echo 🎉 모든 작업이 완료되었습니다!
 echo 👉 브라우저에서 http://localhost 로 접속해 보세요.
