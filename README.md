@@ -1,77 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 톡참새 (EnglishYoutube)
 
-## Getting Started
+이 프로젝트는 [Next.js](https://nextjs.org)를 기반으로 작성된 웹 애플리케이션입니다.
 
-First, run the development server:
+## 🐳 도커 아키텍처 및 배포 구조
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-## Docker Architecture & Deployment
-
-This project has been dockerized for easy deployment and scaling. The architecture consists of an Nginx reverse proxy routing traffic to a standalone Next.js container.
+본 프로젝트는 손쉬운 배포와 확장을 위해 도커(Docker) 환경으로 구성되어 있습니다. Nginx 리버스 프록시가 앞단에서 트래픽을 받아 독립된 Next.js 앱 컨테이너로 전달하는 아키텍처입니다.
 
 ```mermaid
 graph TD
-    Client([Client Browser]) -->|HTTP 80| Nginx[Nginx Reverse Proxy]
-    Nginx -->|HTTP 3000| NextJS[Next.js App Container]
+    Client([클라이언트 브라우저]) -->|HTTP 80| Nginx[Nginx 리버스 프록시]
+    Nginx -->|HTTP 3000| NextJS[Next.js 앱 컨테이너]
     
-    subgraph Docker Network
+    subgraph 도커 네트워크 (Docker Network)
         Nginx
         NextJS
     end
 ```
 
-### How to Run with Docker
+## 🚀 Rocky Linux 가상머신(VM) 자동 배포 가이드
 
-**1. Local Development / Testing**
-To build and run the containers locally:
-```bash
-docker compose up -d --build
-```
-Access the application at `http://localhost` (Nginx automatically forwards to the Next.js app).
+Rocky Linux와 같은 완전히 새로운 가상머신 서버에서도 아래 **명령어 3줄**만 입력하면 도커 설치부터 서비스 배포까지 자동으로 완료됩니다!
 
-**2. Pushing to Docker Hub**
-Use the provided PowerShell script to build and push the image to Docker Hub (`yslee4050/talkchamsae:latest`):
-```bash
-.\docker-push.ps1
-```
-
-**3. Deploying on Another Machine (Automated)**
-For a seamless production deployment (e.g., on a fresh Rocky Linux VM), you can clone the repository and run the automated deployment script. The script will automatically install Docker and start the containers.
-
+**1. 깃허브 저장소 다운로드 (Clone)**
 ```bash
 git clone https://github.com/hugingstar/EnglishYoutube.git
+```
+
+**2. 프로젝트 폴더로 이동**
+```bash
 cd EnglishYoutube
+```
+
+**3. 자동 배포 스크립트 실행**
+```bash
 ./build.sh
 ```
 
-During execution, select `1` to pull the image from Docker Hub (recommended) or `2` to build it locally.
+> **💡 스크립트 실행 안내**
+> - 실행 시 서버에 Docker가 없다면 가장 최신 버전을 자동으로 설치하고 권한을 세팅합니다.
+> - 잠시 후 터미널에 **1번(Docker Hub 이미지 다운로드)** 또는 **2번(로컬 소스코드 빌드)** 옵션을 선택하라는 메시지가 나옵니다.
+> - 가상머신 환경에서는 리소스를 절약하고 가장 빠르게 띄울 수 있는 숫자 `1`을 입력하시는 것을 권장합니다.
+> - 완료되면 서버의 IP 주소(포트 80)로 접속하여 웹페이지가 잘 뜨는지 확인하세요!
+
+---
+
+## 💻 로컬(PC) 개발자 가이드
+
+### 로컬 테스트 환경 띄우기 (도커)
+본인 PC에서 도커 환경을 그대로 띄워서 테스트하려면 아래 명령어를 사용하세요.
+```bash
+docker compose up -d --build
+```
+완료 후 브라우저에서 `http://localhost` (포트 80) 로 접속합니다.
+
+### Docker Hub 이미지 업데이트 (배포용)
+수정한 코드를 새로운 버전의 도커 이미지로 만들어 Docker Hub(`yslee4050/talkchamsae:latest`)에 업로드하려면 터미널(PowerShell)에서 아래 스크립트를 실행합니다.
+```powershell
+.\docker-push.ps1
+```
