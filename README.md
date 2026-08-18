@@ -57,10 +57,8 @@ cd EnglishYoutube
 ## 💻 로컬(PC) 개발자 가이드
 
 ### 로컬 테스트 환경 띄우기 (Windows Host PC)
-Windows 환경에서는 아래 PowerShell 스크립트를 실행하면 Docker 설치 여부 확인부터 배포까지 자동으로 진행됩니다.
-```powershell
-.\build.ps1
-```
+Windows 환경에서는 탐색기에서 **`build.bat` 파일을 더블클릭** 하시면 Docker 설치 여부 확인부터 배포까지 마법사처럼 자동으로 진행됩니다.
+
 > 스크립트 실행 후 `1`(Docker Hub) 또는 `2`(직접 빌드)를 선택하면 컨테이너가 실행됩니다. 완료 후 브라우저에서 `http://localhost` (포트 80) 로 접속하세요.
 
 ### Docker Hub 이미지 업데이트 (배포용)

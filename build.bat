@@ -1,0 +1,59 @@
+@echo off
+chcp 65001 >nul
+echo ===========================================
+echo 🚀 EnglishYoutube Windows 자동 배포 스크립트 시작
+echo ===========================================
+echo.
+
+:: 1. Docker 설치 여부 확인
+where docker >nul 2>nul
+if %ERRORLEVEL% neq 0 (
+    echo [경고] Docker가 설치되어 있지 않습니다.
+    echo Windows에서는 Docker Desktop을 직접 설치하셔야 합니다.
+    echo 설치 페이지로 이동합니다...
+    start https://www.docker.com/products/docker-desktop/
+    echo 설치 및 실행 완료 후 이 스크립트를 다시 실행해주세요.
+    pause
+    exit /b
+)
+
+echo [완료] Docker가 설치되어 있습니다.
+echo.
+
+:: Docker 데몬 동작 상태 확인
+docker info >nul 2>nul
+if %ERRORLEVEL% neq 0 (
+    echo [오류] Docker 데몬이 응답하지 않습니다. Docker Desktop 앱이 켜져 있는지 확인해주세요.
+    pause
+    exit /b
+)
+
+echo 어떤 방식으로 배포하시겠습니까?
+echo 1) Docker Hub에서 다운로드 받아 실행 (빠름, 권장)
+echo 2) 이 PC에서 직접 소스 코드를 빌드하여 실행 (오래 걸림)
+set /p choice="선택 (1 또는 2): "
+
+if "%choice%"=="1" (
+    echo.
+    echo 🌐 Docker Hub에서 이미지를 가져와 배포합니다...
+    docker compose -f docker-compose.hub.yml up -d
+    goto end
+)
+
+if "%choice%"=="2" (
+    echo.
+    echo 🔨 소스코드를 직접 빌드하여 배포합니다...
+    docker compose up -d --build
+    goto end
+)
+
+echo.
+echo [오류] 잘못된 입력입니다. 스크립트를 종료합니다.
+pause
+exit /b
+
+:end
+echo.
+echo 🎉 모든 작업이 완료되었습니다!
+echo 👉 브라우저에서 http://localhost 로 접속해 보세요.
+pause
