@@ -11,7 +11,7 @@ graph TD
     Client([클라이언트 브라우저]) -->|HTTP 80| Nginx[Nginx 리버스 프록시]
     Nginx -->|HTTP 3000| NextJS[Next.js 앱 컨테이너]
     
-    subgraph 도커 네트워크 (Docker Network)
+    subgraph DockerNetwork ["도커 네트워크 (Docker Network)"]
         Nginx
         NextJS
     end
