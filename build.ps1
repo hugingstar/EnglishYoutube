@@ -6,6 +6,8 @@ Windows 환경(Host PC)을 위한 자동 배포 스크립트입니다.
 Write-Host "===========================================" -ForegroundColor Cyan
 Write-Host "🚀 EnglishYoutube Windows 자동 배포 스크립트 시작" -ForegroundColor Cyan
 Write-Host "===========================================" -ForegroundColor Cyan
+Write-Host "💡 참고: 이 스크립트는 코드를 한창 수정 중일 때 로컬에서 임시로 구워볼 때 쓰는 용도입니다." -ForegroundColor Yellow
+Write-Host "도커 허브에 배포가 완료된 현재 단계에서는 deploy.bat 또는 deploy.ps1을 사용하세요." -ForegroundColor Yellow
 
 # 1. Docker 설치 여부 확인
 if (!(Get-Command docker -ErrorAction SilentlyContinue)) {

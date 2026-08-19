@@ -5,6 +5,8 @@
 echo "==========================================="
 echo "🚀 EnglishYoutube 배포 시작 (Docker Hub 이미지 사용)"
 echo "==========================================="
+echo "💡 안내: 기본값이 -Hub 모드로 세팅되어 있으므로, 서버가 Docker Hub에서"
+echo "최신 이미지를 즉시 다운로드(Pull)합니다. 기존 컨테이너를 내리고 최신 버전으로 바꿉니다."
 
 # 1. Docker 설치 여부 확인 및 설치 (Rocky Linux 기준)
 if ! command -v docker &> /dev/null; then

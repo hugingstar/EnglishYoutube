@@ -4,9 +4,15 @@ Windows 환경(Host PC)을 위한 자동 배포 스크립트입니다.
 목적: Docker Hub에서 미리 빌드된 이미지를 다운로드하여 실행 (빠름)
 #>
 
+param (
+    [switch]$Hub = $true
+)
+
 Write-Host "===========================================" -ForegroundColor Cyan
 Write-Host "🚀 EnglishYoutube 배포 시작 (Docker Hub 이미지 사용)" -ForegroundColor Cyan
 Write-Host "===========================================" -ForegroundColor Cyan
+Write-Host "💡 안내: 방금 도커 허브에 올린 최신 이미지를 다운로드(Pull)받고," -ForegroundColor Green
+Write-Host "윈도우 환경에 앱과 모니터링 스택을 모두 띄웁니다." -ForegroundColor Green
 
 # 1. Docker 설치 여부 확인
 if (!(Get-Command docker -ErrorAction SilentlyContinue)) {
