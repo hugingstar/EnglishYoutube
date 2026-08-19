@@ -4,26 +4,43 @@
     <meta charset="UTF-8">
     <title>Technical Document</title>
     <style>
-        /* 기본 화면 스타일 - 여백 축소 */
-        body { font-family: 'Malgun Gothic', sans-serif; line-height: 1.6; max-width: 1000px; margin: 0 auto; padding: 15px; box-sizing: border-box; }
+        /* 기본 화면 및 인쇄 스타일 */
+        body { 
+            font-family: 'Malgun Gothic', sans-serif; 
+            font-size: 11pt; /* 요청하신 11pt 글자 크기 */
+            line-height: 1.6; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            box-sizing: border-box; 
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: inherit; /* 타이틀은 기본 글자체 */
+        }
         table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 11pt; }
         th { background-color: #f2f2f2; }
         code { background-color: #f4f4f4; padding: 2px 4px; border-radius: 4px; }
         pre { background-color: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto; }
         
         .mermaid { 
-            margin: 20px auto; 
+            margin: 30px auto; 
             text-align: center;
             page-break-inside: avoid;
             break-inside: avoid;
+            width: 100%;
+            overflow: visible;
+        }
+        .mermaid svg {
+            max-width: 100%;
+            height: auto;
         }
 
-        /* PDF 인쇄(Print) 스타일 - 양쪽 여백 좁게, 그림 회전(가로모드) */
+        /* PDF 인쇄(Print) 전용 스타일 */
         @media print {
             @page { 
-                margin: 10mm; /* 양쪽 여백을 매우 좁게 설정 */
-                size: A4 landscape; /* 그림과 글씨가 작아지는 것을 방지하기 위해 용지 자체를 90도 회전(가로) */
+                size: A4 portrait; /* 용지 세로 방향 설정 시 글자 크기가 작아지지 않도록 꽉 차게 렌더링 */
+                margin: 10mm; /* 양쪽 여백 너비 좁게 */
             }
             body { 
                 padding: 0; 
@@ -35,71 +52,77 @@
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ 
             startOnLoad: true,
-            theme: 'default'
+            theme: 'default',
+            securityLevel: 'loose'
         });
     </script>
 </head>
 <body>
-    <h1>표준 기술 문서 (Standard Technical Document)</h1>
-<h2>프로젝트명: 톡참새 (EnglishYoutube)</h2>
-<h3>1. 개요 (Overview)</h3>
-<p>본 문서는 "톡참새 (EnglishYoutube)" 프로젝트의 아키텍처, 기술 스택 및 배포 워크플로우에 대한 공개용 기술 지침을 제공합니다. 본 프로젝트는 Next.js 프레임워크를 기반으로 구축된 웹 애플리케이션으로, 도커(Docker) 컨테이너 기반으로 완벽하게 가상화되어 로컬 개발 환경부터 운영 서버까지 일관된 실행 환경을 보장합니다.</p>
-<h3>2. 기술 스택 (Tech Stack)</h3>
-<ul>
-<li><strong>Frontend/Backend:</strong> Next.js</li>
-<li><strong>Containerization:</strong> Docker, Docker Compose</li>
-<li><strong>Web Server / Reverse Proxy:</strong> Nginx</li>
-<li><strong>OS (Target):</strong> Linux (운영 환경), Windows (개발 환경)</li>
-</ul>
-<h3>3. 시스템 아키텍처 (System Architecture)</h3>
-<p>본 프로젝트는 서비스의 안정성과 보안을 극대화하기 위해 Nginx 리버스 프록시와 Docker 컨테이너 격리 기술을 활용한 아키텍처를 채택하고 있습니다.</p>
-<h4>3.1 주요 구성 요소 설명</h4>
-<ul>
-<li><strong>Nginx (리버스 프록시):</strong> 외부에서 들어오는 모든 클라이언트 요청을 가장 먼저 맞이하는 관문입니다. Nginx는 비정상적인 요청을 1차적으로 필터링하고, 안전하게 내부망에 위치한 Next.js 컨테이너로 라우팅합니다. 이를 통해 직접적인 외부 공격으로부터 애플리케이션을 보호합니다.</li>
-<li><strong>Next.js (웹 애플리케이션):</strong> 실제 서비스 비즈니스 로직과 프론트엔드 UI 렌더링을 담당하는 핵심 컨테이너입니다.</li>
-<li><strong>격리 및 보안 (내부망 통신):</strong> Next.js 애플리케이션은 외부에 포트를 직접 노출하지 않습니다. 오직 Nginx를 거친 정상적인 트래픽만 내부 Docker 네트워크망을 통해 전달받아 응답합니다. 이러한 구조는 내부 서비스 포트 다이렉트 접속 시도를 원천 차단합니다.</li>
-</ul>
-<h4>3.2 아키텍처 다이어그램 (Workflow)</h4>
-<p>로컬 개발부터 클라우드 운영 서버 배포까지의 전체적인 흐름도입니다.</p>
-<div class="mermaid">flowchart LR
+    <h1>톡참새 (EnglishYoutube)</h1>
+<p><strong>톡참새(EnglishYoutube)</strong>는 <a href="https://nextjs.org">Next.js</a>를 기반으로 만들어진 원어민 일상 유튜브 영상 큐레이션 서비스입니다.
+복잡한 환경 설정 없이, 스크립트 실행 한 번으로 로컬(내 PC) 테스트부터 실제 운영 서버 배포까지 완벽하게 자동화되어 초보자도 쉽게 다룰 수 있습니다.</p>
+<hr />
+<h2>🏗️ 시스템 아키텍처</h2>
+<p>서비스가 어떻게 동작하고 배포되는지 보여주는 전체 구조도입니다.</p>
+<div class="mermaid">%%{init: {'theme': 'default', 'themeVariables': { 'fontSize': '18px', 'fontFamily': 'sans-serif'}}}%%
+flowchart TD
     subgraph Developer[&quot;개발 환경 (Windows)&quot;]
         Code[&quot;💻 애플리케이션 개발&quot;]
-        Code --&gt; BuildBat[&quot;🛠️ 로컬 환경 빌드 및 테스트&quot;]
-        Code --&gt; PushPS[&quot;🚀 최신 배포본 클라우드 업로드&quot;]
+        Code --&gt; BuildBat[&quot;🛠️ 로컬 빌드 및 테스트&lt;br/&gt;(build.bat)&quot;]
+        Code --&gt; PushPS[&quot;🚀 클라우드 저장소 업로드&lt;br/&gt;(docker-push.ps1)&quot;]
     end
 
-    Hub[(&quot;🐳 중앙 저장소\n(Docker Hub)&quot;)]
+    Hub[(&quot;🐳 중앙 이미지 저장소&lt;br/&gt;(Docker Hub)&quot;)]
     PushPS == &quot;이미지 Push&quot; ==&gt; Hub
 
-    subgraph Deployment[&quot;배포 자동화&quot;]
-        DeployWin[&quot;🪟 Windows 환경 배포&quot;]
-        DeployLin[&quot;🐧 Linux 환경 배포&quot;]
+    subgraph Server[&quot;운영 컨테이너 환경 (Linux / Windows)&quot;]
+        Deploy[&quot;⚡ 자동 배포 스크립트&lt;br/&gt;(deploy.sh / deploy.bat)&quot;]
+        Nginx[&quot;Nginx&lt;br/&gt;(리버스 프록시)&quot;]
+        NextJS[&quot;Next.js&lt;br/&gt;(웹 애플리케이션)&quot;]
+
+        Deploy -.-&gt;|최신 이미지 Pull| Nginx
+        Nginx -.-&gt;|내부망 안전 라우팅| NextJS
     end
 
-    Hub == &quot;이미지 Pull&quot; ==&gt; DeployWin
-    Hub == &quot;이미지 Pull&quot; ==&gt; DeployLin
-
-    subgraph Server[&quot;운영 컨테이너 환경&quot;]
-        Nginx[&quot;Nginx\n(리버스 프록시)&quot;]
-        NextJS[&quot;Next.js\n(웹 앱)&quot;]
-        DeployLin -.-&gt; Nginx
-        DeployWin -.-&gt; Nginx
-        Nginx -.-&gt; NextJS
-    end
+    Hub == &quot;이미지 다운로드&quot; ==&gt; Deploy
 </div>
-<h3>4. 배포 워크플로우 (Deployment Workflow)</h3>
-<p>배포 프로세스는 스크립트를 통해 자동화되어 있으며, 역할에 따라 구분됩니다. 도커 허브에 이미지가 등록된 이후에는 배포용 스크립트 단 1회 실행으로 배포가 완료됩니다.</p>
-<h4>4.1 배포 단계 (Deployment)</h4>
-<ul>
-<li><code>deploy.bat</code>: Windows 환경에서 최신 이미지를 다운로드(Pull)받아 무중단으로 컨테이너를 교체합니다.</li>
-<li><code>deploy.sh</code>: Linux 환경에서 최신 이미지를 다운로드받아 즉시 서버를 교체합니다.</li>
-</ul>
-<h4>4.2 개발 단계 (Development)</h4>
-<ul>
-<li><code>build.bat</code> / <code>build.ps1</code> / <code>build.sh</code>: 로컬(Windows/Linux)에서 코드를 직접 구워볼 때 사용하는 개발자용 스크립트입니다.</li>
-<li><code>docker-push.ps1</code>: 개발 완료 후 새로운 릴리스 버전을 빌드하고, 클라우드 레지스트리에 업로드합니다.</li>
-</ul>
-<h3>5. 결론 (Conclusion)</h3>
-<p>본 프로젝트는 Docker를 활용하여 개발/운영 환경 간의 파편화를 제거하였으며, Nginx 리버스 프록시를 도입하여 보안성과 확장성을 동시에 확보했습니다. 자동화된 스크립트를 통해 신속하고 안정적인 CI/CD 및 인프라 관리를 지원합니다.</p>
+<hr />
+<h2>🗂️ 데이터 구조 (ER Diagram)</h2>
+<p>현재 서비스에서 관리하는 주요 정적 데이터(Curation)와 외부 유튜브 API와의 관계도입니다.</p>
+<div class="mermaid">%%{init: {'theme': 'default', 'themeVariables': { 'fontSize': '18px', 'fontFamily': 'sans-serif'}}}%%
+erDiagram
+    USER ||--o{ VIDEO_META : &quot;영상 선택 및 시청&quot;
+    VIDEO_META ||--|| YOUTUBE_API : &quot;자막 및 메타데이터 실시간 연동&quot;
+
+    VIDEO_META {
+        string id PK &quot;고유 ID&quot;
+        string youtubeId &quot;유튜브 고유 식별자&quot;
+        string sourceLang &quot;원본 언어&quot;
+        string language &quot;자막 언어 (en-US, ja 등)&quot;
+        string topic &quot;영상 카테고리/주제&quot;
+        string reason &quot;큐레이션 이유&quot;
+    }
+
+    YOUTUBE_API {
+        string captions &quot;실시간 공식 자막&quot;
+        string videoData &quot;영상 재생 정보&quot;
+    }
+</div>
+<hr />
+<h2>🚀 배포 가이드 (시작하기)</h2>
+<p>이 프로젝트는 도커(Docker) 기반으로 동작하므로, 아래 스크립트 중 본인의 상황에 맞는 <strong>단 하나</strong>만 실행하면 됩니다!</p>
+<h3>1. 내 컴퓨터에서 수정하고 테스트할 때 (개발용)</h3>
+<p>코드를 수정하고 내 PC에서 확인하고 싶을 때 사용합니다.
+- <strong>Windows:</strong> <code>build.bat</code> (또는 <code>build.ps1</code>) 실행</p>
+<h3>2. 수정된 버전을 도커 허브(클라우드)에 올릴 때</h3>
+<p>내 PC에서 테스트가 완료된 완벽한 버전을 출시할 때 딱 1번 사용합니다.
+- <strong>Windows:</strong> <code>docker-push.ps1</code> 실행</p>
+<h3>3. 실제 운영 서버에 최신 버전을 배포할 때 (실서버용)</h3>
+<p>도커 허브에 올라간 최신 버전을 다운로드 받아 서비스할 때 사용합니다. 빌드 과정이 생략되어 1초 만에 초고속 배포가 가능합니다.
+- <strong>Windows 환경:</strong> <code>deploy.bat</code> 실행
+- <strong>Linux 환경:</strong> <code>./deploy.sh</code> 실행</p>
+<blockquote>
+<p><strong>보안 안내:</strong> Next.js 애플리케이션은 외부에 직접 포트를 열지 않고, 오직 Nginx를 통해서만 안전하게 접속되도록 내부망이 격리되어 있습니다. 포트 80을 통한 안전한 트래픽만 허용됩니다.</p>
+</blockquote>
 </body>
 </html>

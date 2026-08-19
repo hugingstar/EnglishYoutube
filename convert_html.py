@@ -1,7 +1,7 @@
 import markdown
 import sys
 
-with open('Technical_Document.md', 'r', encoding='utf-8') as f:
+with open('README.md', 'r', encoding='utf-8') as f:
     text = f.read()
 
 html_content = markdown.markdown(text, extensions=['fenced_code', 'tables'])
@@ -12,26 +12,43 @@ html_template = f"""<!DOCTYPE html>
     <meta charset="UTF-8">
     <title>Technical Document</title>
     <style>
-        /* 기본 화면 스타일 - 여백 축소 */
-        body {{ font-family: 'Malgun Gothic', sans-serif; line-height: 1.6; max-width: 1000px; margin: 0 auto; padding: 15px; box-sizing: border-box; }}
+        /* 기본 화면 및 인쇄 스타일 */
+        body {{ 
+            font-family: 'Malgun Gothic', sans-serif; 
+            font-size: 11pt; /* 요청하신 11pt 글자 크기 */
+            line-height: 1.6; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            box-sizing: border-box; 
+        }}
+        h1, h2, h3, h4, h5, h6 {{
+            font-family: inherit; /* 타이틀은 기본 글자체 */
+        }}
         table {{ border-collapse: collapse; width: 100%; margin-bottom: 20px; }}
-        th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
+        th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 11pt; }}
         th {{ background-color: #f2f2f2; }}
         code {{ background-color: #f4f4f4; padding: 2px 4px; border-radius: 4px; }}
         pre {{ background-color: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto; }}
         
         .mermaid {{ 
-            margin: 20px auto; 
+            margin: 30px auto; 
             text-align: center;
             page-break-inside: avoid;
             break-inside: avoid;
+            width: 100%;
+            overflow: visible;
+        }}
+        .mermaid svg {{
+            max-width: 100%;
+            height: auto;
         }}
 
-        /* PDF 인쇄(Print) 스타일 - 양쪽 여백 좁게, 그림 회전(가로모드) */
+        /* PDF 인쇄(Print) 전용 스타일 */
         @media print {{
             @page {{ 
-                margin: 10mm; /* 양쪽 여백을 매우 좁게 설정 */
-                size: A4 landscape; /* 그림과 글씨가 작아지는 것을 방지하기 위해 용지 자체를 90도 회전(가로) */
+                size: A4 portrait; /* 용지 세로 방향 설정 시 글자 크기가 작아지지 않도록 꽉 차게 렌더링 */
+                margin: 10mm; /* 양쪽 여백 너비 좁게 */
             }}
             body {{ 
                 padding: 0; 
@@ -43,7 +60,8 @@ html_template = f"""<!DOCTYPE html>
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({{ 
             startOnLoad: true,
-            theme: 'default'
+            theme: 'default',
+            securityLevel: 'loose'
         }});
     </script>
 </head>
