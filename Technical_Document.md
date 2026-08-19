@@ -11,32 +11,39 @@
 - **OS (Target):** Linux (운영 환경), Windows (개발 환경)
 
 ### 3. 시스템 아키텍처 (System Architecture)
-- **외부 요청 처리:** 클라이언트의 HTTP 요청은 운영 서버의 Nginx 리버스 프록시가 수신합니다.
-- **내부 라우팅:** Nginx는 수신한 요청을 Docker 내부 네트워크를 통해 격리된 Next.js 앱 컨테이너로 전달합니다.
-- **격리 및 보안:** Next.js 애플리케이션은 외부에 직접 노출되지 않으며, Nginx를 거쳐야만 접근 가능합니다. 외부망과 내부망을 철저히 분리하여 보안을 강화했습니다.
+
+본 프로젝트는 서비스의 안정성과 보안을 극대화하기 위해 Nginx 리버스 프록시와 Docker 컨테이너 격리 기술을 활용한 아키텍처를 채택하고 있습니다.
+
+#### 3.1 주요 구성 요소 설명
+- **Nginx (리버스 프록시):** 외부에서 들어오는 모든 클라이언트 요청을 가장 먼저 맞이하는 관문입니다. Nginx는 비정상적인 요청을 1차적으로 필터링하고, 안전하게 내부망에 위치한 Next.js 컨테이너로 라우팅합니다. 이를 통해 직접적인 외부 공격으로부터 애플리케이션을 보호합니다.
+- **Next.js (웹 애플리케이션):** 실제 서비스 비즈니스 로직과 프론트엔드 UI 렌더링을 담당하는 핵심 컨테이너입니다.
+- **격리 및 보안 (내부망 통신):** Next.js 애플리케이션은 외부에 포트를 직접 노출하지 않습니다. 오직 Nginx를 거친 정상적인 트래픽만 내부 Docker 네트워크망을 통해 전달받아 응답합니다. 이러한 구조는 내부 서비스 포트 다이렉트 접속 시도를 원천 차단합니다.
+
+#### 3.2 아키텍처 다이어그램 (Workflow)
+로컬 개발부터 클라우드 운영 서버 배포까지의 전체적인 흐름도입니다.
 
 ```mermaid
-flowchart TD
-    subgraph Developer["개발 환경"]
+flowchart LR
+    subgraph Developer["개발 환경 (Windows)"]
         Code["💻 애플리케이션 개발"]
         Code --> BuildBat["🛠️ 로컬 환경 빌드 및 테스트"]
-        Code --> PushPS["🚀 최신 배포본 생성 및 클라우드 업로드"]
+        Code --> PushPS["🚀 최신 배포본 클라우드 업로드"]
     end
 
-    Hub[("🐳 중앙 이미지 저장소 (Docker Hub)")]
+    Hub[("🐳 중앙 저장소\n(Docker Hub)")]
     PushPS == "이미지 Push" ==> Hub
 
     subgraph Deployment["배포 자동화"]
-        DeployWin["🪟 Windows 환경 자동 배포"]
-        DeployLin["🐧 Linux 환경 자동 배포"]
+        DeployWin["🪟 Windows 환경 배포"]
+        DeployLin["🐧 Linux 환경 배포"]
     end
 
     Hub == "이미지 Pull" ==> DeployWin
     Hub == "이미지 Pull" ==> DeployLin
 
     subgraph Server["운영 컨테이너 환경"]
-        Nginx["Nginx (리버스 프록시)"]
-        NextJS["Next.js (웹 애플리케이션)"]
+        Nginx["Nginx\n(리버스 프록시)"]
+        NextJS["Next.js\n(웹 앱)"]
         DeployLin -.-> Nginx
         DeployWin -.-> Nginx
         Nginx -.-> NextJS

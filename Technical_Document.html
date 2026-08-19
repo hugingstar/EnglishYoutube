@@ -4,17 +4,39 @@
     <meta charset="UTF-8">
     <title>Technical Document</title>
     <style>
-        body { font-family: 'Malgun Gothic', sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
-        table { border-collapse: collapse; width: 100%; }
+        /* 기본 화면 스타일 - 여백 축소 */
+        body { font-family: 'Malgun Gothic', sans-serif; line-height: 1.6; max-width: 1000px; margin: 0 auto; padding: 15px; box-sizing: border-box; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background-color: #f2f2f2; }
         code { background-color: #f4f4f4; padding: 2px 4px; border-radius: 4px; }
         pre { background-color: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto; }
-        .mermaid { margin-bottom: 20px; }
+        
+        .mermaid { 
+            margin: 20px auto; 
+            text-align: center;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        /* PDF 인쇄(Print) 스타일 - 양쪽 여백 좁게, 그림 회전(가로모드) */
+        @media print {
+            @page { 
+                margin: 10mm; /* 양쪽 여백을 매우 좁게 설정 */
+                size: A4 landscape; /* 그림과 글씨가 작아지는 것을 방지하기 위해 용지 자체를 90도 회전(가로) */
+            }
+            body { 
+                padding: 0; 
+                max-width: 100%;
+            }
+        }
     </style>
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-        mermaid.initialize({ startOnLoad: true });
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default'
+        });
     </script>
 </head>
 <body>
@@ -30,32 +52,36 @@
 <li><strong>OS (Target):</strong> Linux (운영 환경), Windows (개발 환경)</li>
 </ul>
 <h3>3. 시스템 아키텍처 (System Architecture)</h3>
+<p>본 프로젝트는 서비스의 안정성과 보안을 극대화하기 위해 Nginx 리버스 프록시와 Docker 컨테이너 격리 기술을 활용한 아키텍처를 채택하고 있습니다.</p>
+<h4>3.1 주요 구성 요소 설명</h4>
 <ul>
-<li><strong>외부 요청 처리:</strong> 클라이언트의 HTTP 요청은 운영 서버의 Nginx 리버스 프록시가 수신합니다.</li>
-<li><strong>내부 라우팅:</strong> Nginx는 수신한 요청을 Docker 내부 네트워크를 통해 격리된 Next.js 앱 컨테이너로 전달합니다.</li>
-<li><strong>격리 및 보안:</strong> Next.js 애플리케이션은 외부에 직접 노출되지 않으며, Nginx를 거쳐야만 접근 가능합니다. 외부망과 내부망을 철저히 분리하여 보안을 강화했습니다.</li>
+<li><strong>Nginx (리버스 프록시):</strong> 외부에서 들어오는 모든 클라이언트 요청을 가장 먼저 맞이하는 관문입니다. Nginx는 비정상적인 요청을 1차적으로 필터링하고, 안전하게 내부망에 위치한 Next.js 컨테이너로 라우팅합니다. 이를 통해 직접적인 외부 공격으로부터 애플리케이션을 보호합니다.</li>
+<li><strong>Next.js (웹 애플리케이션):</strong> 실제 서비스 비즈니스 로직과 프론트엔드 UI 렌더링을 담당하는 핵심 컨테이너입니다.</li>
+<li><strong>격리 및 보안 (내부망 통신):</strong> Next.js 애플리케이션은 외부에 포트를 직접 노출하지 않습니다. 오직 Nginx를 거친 정상적인 트래픽만 내부 Docker 네트워크망을 통해 전달받아 응답합니다. 이러한 구조는 내부 서비스 포트 다이렉트 접속 시도를 원천 차단합니다.</li>
 </ul>
-<div class="mermaid">flowchart TD
-    subgraph Developer[&quot;개발 환경&quot;]
+<h4>3.2 아키텍처 다이어그램 (Workflow)</h4>
+<p>로컬 개발부터 클라우드 운영 서버 배포까지의 전체적인 흐름도입니다.</p>
+<div class="mermaid">flowchart LR
+    subgraph Developer[&quot;개발 환경 (Windows)&quot;]
         Code[&quot;💻 애플리케이션 개발&quot;]
         Code --&gt; BuildBat[&quot;🛠️ 로컬 환경 빌드 및 테스트&quot;]
-        Code --&gt; PushPS[&quot;🚀 최신 배포본 생성 및 클라우드 업로드&quot;]
+        Code --&gt; PushPS[&quot;🚀 최신 배포본 클라우드 업로드&quot;]
     end
 
-    Hub[(&quot;🐳 중앙 이미지 저장소 (Docker Hub)&quot;)]
+    Hub[(&quot;🐳 중앙 저장소\n(Docker Hub)&quot;)]
     PushPS == &quot;이미지 Push&quot; ==&gt; Hub
 
     subgraph Deployment[&quot;배포 자동화&quot;]
-        DeployWin[&quot;🪟 Windows 환경 자동 배포&quot;]
-        DeployLin[&quot;🐧 Linux 환경 자동 배포&quot;]
+        DeployWin[&quot;🪟 Windows 환경 배포&quot;]
+        DeployLin[&quot;🐧 Linux 환경 배포&quot;]
     end
 
     Hub == &quot;이미지 Pull&quot; ==&gt; DeployWin
     Hub == &quot;이미지 Pull&quot; ==&gt; DeployLin
 
     subgraph Server[&quot;운영 컨테이너 환경&quot;]
-        Nginx[&quot;Nginx (리버스 프록시)&quot;]
-        NextJS[&quot;Next.js (웹 애플리케이션)&quot;]
+        Nginx[&quot;Nginx\n(리버스 프록시)&quot;]
+        NextJS[&quot;Next.js\n(웹 앱)&quot;]
         DeployLin -.-&gt; Nginx
         DeployWin -.-&gt; Nginx
         Nginx -.-&gt; NextJS
